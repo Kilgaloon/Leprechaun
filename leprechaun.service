@@ -1,0 +1,14 @@
+[Unit]
+Description=Leprechaun service 
+
+[Service]
+Type=simple
+User=leprechaun
+# If env file not found ignore
+EnvironmentFile=-/etc/sysconfig/leprechaun
+ExecStart=/usr/bin/leprechaun
+Restart=always
+RestartSec=120
+
+[Install]
+WantedBy=multi-user.target

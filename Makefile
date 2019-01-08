@@ -1,16 +1,22 @@
 export GO111MODULE=on
+DESTDIR?=/
 
 install:
-	mkdir /etc/leprechaun
-	mkdir /etc/leprechaun/recipes
-	cp -r dist/configs /etc/leprechaun/configs
-	mkdir /var/log/leprechaun/
-	mkdir /var/log/leprechaun/server
-	mkdir /var/run/leprechaun/workers.output
-	touch /var/log/leprechaun/info.log
-	touch /var/log/leprechaun/error.log
+	mkdir -p $(DESTDIR)/etc/leprechaun/{configs,recipes}
+	sed -e "s#@@USER_HOME@@#$(HOME)#g;s#@@LEPRECHAUN_HOME@@#$(DESTDIR)#g" dist/configs/config.ini > $(DESTDIR)/etc/leprechaun/configs/config.ini
+	cp dist/configs/debug_config.ini $(DESTDIR)/etc/leprechaun/configs/
+	mkdir -p $(DESTDIR)/var/log/leprechaun/{server,workers.output}
+	touch $(DESTDIR)/var/log/leprechaun/info.log
+	touch $(DESTDIR)/var/log/leprechaun/error.log
+	cp leprechaun.service /etc/systemd/system/
 	go install ./cmd/leprechaun
 	go install ./cmd/lepretools
+
+install-user: install
+	# This part depends on who install it
+	# i assume it is user who want to run it
+	mkdir -p ~/.config/systemd/user/
+	sed -e "s#@@USER_HOME@@#$(HOME)#g;s#@@LEPRECHAUN_HOME@@#$(DESTDIR)#g" leprechaun-user.service > ~/.config/systemd/user/leprechaun-user.service
 
 uninstall:
 	rm -rf /etc/leprechaun

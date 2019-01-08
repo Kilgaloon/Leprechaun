@@ -1,0 +1,12 @@
+[Unit]
+Description=Leprechaun user service
+
+[Service]
+Type=simple
+ExecStart=@@USER_HOME@@/go/bin/leprechaun -ini_path @@LEPRECHAUN_HOME@@/etc/leprechaun/configs/config.ini
+ExecStop=@@USER_HOME@@/go/bin/leprechaun -cmd "client:stop"
+Restart=always
+RestartSec=120
+
+[Install]
+WantedBy=multi-user.target
